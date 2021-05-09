@@ -81,3 +81,16 @@ Dùng lệnh `b tên_hàm` hoặc `b *địa_chỉ_lệnh` để đặt breakpoi
 Dùng lệnh `r đối_số_1 đối_số_2` để chạy chương trình. Ở trên thì mình đã chạy chương trình mà không nhập thêm đối số  
 
 ![image](https://user-images.githubusercontent.com/74854445/117553234-7d52a900-b07a-11eb-9bae-bd02d998f262.png)
+
+Trên hình mọi người có thể thấy có 4 phần:  
+
+| Phần | Mục đích |
+| :----- | :---------- |
+| REGISTERS | Hiện thị giá trị của các thanh ghi mà chương trình sử dụng để tính toán |
+| DISASM | Hiện thị lệnh assembly hiện tại và các lệnh tiếp theo |
+| STACK | Hiển thị stack |
+| BACKSTRACE | *Cái này thì mình chưa dùng tới nên cũng chưa rõ nó là cái gì :)))* |
+
+Dùng lệnh `next` hoặc `n` để chuyển đến lệnh tiếp theo  
+
+Dùng lệnh `continue` hoặc `c` để chuyển đến breakpoint tiếp theo  
