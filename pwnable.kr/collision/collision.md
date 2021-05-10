@@ -94,3 +94,68 @@ Trên hình mọi người có thể thấy có 4 phần:
 Dùng lệnh `next` hoặc `n` để chuyển đến lệnh tiếp theo  
 
 Dùng lệnh `continue` hoặc `c` để chuyển đến breakpoint tiếp theo  
+
+> **Một tip dành cho các bạn chưa quen nhìn hợp ngữ ASM**  
+> 
+> Các bạn chỉ cẩn tập trung vào những lệnh `cmp` (lệnh so sánh), xem nó so sánh cái gì với cái gì, có thể xem thêm link dưới này để hiểu rõ hơn về lệnh `cmp`  
+> 
+> https://ti-root.blogspot.com/2015/06/tap-lenh-assembly-cua-intel-80888086-p5.html#:~:text=T%C3%A1c%20d%E1%BB%A5ng%3A%20L%E1%BB%87nh%20Cmp%20(Compare,ZF%2C%20OF%2C...
+> 
+> Rồi dò ngược lại xem cái đó từ đâu mà ra là được  
+> 
+> Dễ mà phải hum :3  
+
+![image](https://user-images.githubusercontent.com/74854445/117696822-ef96cb00-b1eb-11eb-8fd7-2779ef43342e.png)
+
+Do khi chạy chương trình mà không thêm đối số nên sau khi `n` liên tục thì đến được lệnh gọi hàm `printf` để in ra dòng này `"usage : %s [passcode]\n"`  
+
+Các bạn có thể so sánh thật kỹ 2 dòng phía dưới lệnh `call` trong hình với đoạn code dưới đây để hiểu rõ hơn nhá  
+
+```c
+if(argc<2){
+		printf("usage : %s [passcode]\n", argv[0]);
+		return 0;
+	}
+```  
+
+Được rồi, nãy giờ là dạo đầu một xí để hiểu sơ về pwndbg, asm với debug thôi. Giờ mới debug thiệt nè :)))  
+
+Theo phân tích từ đoạn source code phía trên thì ta sẽ cần phải nhập vào chương trình 1 đối số dài 20 bytes và vì `mảng argv` là mảng con trỏ kiểu char (kiểu ký tự)  
+
+Nên mình sẽ nhập thử 20byte là AAAABBBBCCCCDDDDEEEE  
+
+![image](https://user-images.githubusercontent.com/74854445/117701563-99c52180-b1f1-11eb-8ce7-f384d98c918a.png)  
+
+`n` liên tục thì sẽ thấy ta không còn bị kẹt ở lệnh `cmp` trước đó nữa mà ta đã tới được một lệnh `cmp` mới :)))  
+
+![image](https://user-images.githubusercontent.com/74854445/117704722-608eb080-b1f5-11eb-886b-0e2e16dfa67e.png)  
+
+Lệnh này so sánh giá trị của thanh ghi EAX với 0x14 kiểu hex tức là 20 theo kiểu decimal (thập phân)  
+
+Theo source code là ta đang ở chỗ này  
+
+```c
+if(strlen(argv[1]) != 20){
+		printf("passcode length should be 20 bytes\n");
+		return 0;
+		}
+```
+
+Để ý ở thanh ghi EAX ở phần REGISTERS thì cúng có thể thấy EAX = 0x14 nên cũng không phải nói gì nhiều ở đây cả  
+
+`n` tiếp thì tới `hàm check_password`  
+
+```c
+unsigned long check_password(const char* p){
+	int* ip = (int*)p;
+	int i;
+	int res=0;
+	for(i=0; i<5; i++){
+		res += ip[i];
+	}
+	return res;
+}
+```
+![image](https://user-images.githubusercontent.com/74854445/117706643-c419dd80-b1f7-11eb-982e-9e0f9e522773.png)  
+
+Tiện thể thì mình vừa đặt breakpoint tại lệnh `call` luôn để lúc sau mình không cần phải `n` nữa :)))
