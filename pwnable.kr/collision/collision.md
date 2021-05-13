@@ -7,7 +7,7 @@ Một challenge rất thích hợp để luyện tập các skill debug cho ngư
 
 Vì MD5 hay hash collision thật ra cũng không quan trọng lắm đến cách chúng ta giải challenge này cho nên mình sẽ không nói gì về chúng ở đây  
 
-## Solving
+## Debug
 
 Ta có soure code C như sau:
 ```c
@@ -69,8 +69,6 @@ Cấu trúc lệnh sẽ là:
 ![image](https://user-images.githubusercontent.com/74854445/117552349-00710080-b075-11eb-9ea0-2ea1be3ca5da.png)
 
 > Một lưu ý nhỏ là không nên đặt tên file là `col` vì nó là một lệnh (command) nên khi tải về sẽ bị lỗi, không mở được.
-
-### Debug  
 
 ![image](https://user-images.githubusercontent.com/74854445/117552648-e89a7c00-b076-11eb-94ac-505843d53db9.png)
 
@@ -158,4 +156,55 @@ unsigned long check_password(const char* p){
 ```
 ![image](https://user-images.githubusercontent.com/74854445/117706643-c419dd80-b1f7-11eb-982e-9e0f9e522773.png)  
 
-Tiện thể thì mình vừa đặt breakpoint tại lệnh `call` luôn để lúc sau mình không cần phải `n` nữa :)))
+Tiện thể thì mình vừa đặt breakpoint tại lệnh `call` luôn để lúc sau mình không cần phải `n` nữa :)))  
+
+Chú ý vào source code ta sẽ thấy tham số của `hàm check_password` là **1 con trỏ p kiểu char**  
+
+Sau đó hàm ép kiểu của con trỏ `p`, đưa nó từ kiểu char thành kiểu int `(int*)p`, rồi gán vào con trỏ `ip` kiểu int  
+
+Điều này có nghĩa là nó sẽ lấy 4 byte ký tự thành 1 số
+
+> Để giải thích cho sự xoắn vừa rồi thì bạn cần phải hiểu  
+> 
+> ![image](https://user-images.githubusercontent.com/74854445/118051671-98d7ef80-b3ab-11eb-8539-a8b2a49e4814.png)  
+> 
+> Kiểu `char` có size (kích thước) là 1 byte. Nghĩa là 1 ký tự "A" có kích thước là 1 byte
+> 
+> Kiểu `int` có size (kích thước) là 4 bytes. Nghĩa là 1 số bất kỳ nằm trong khoảng từ -2,147,483,648 đến 2,147,483,647 đều có kích thước là 4 bytes  
+> 
+> Dữ liệu trong chương trình chỉ là một dãy các bit (8 bit = 1 byte)
+> 
+> Nên nếu ta quy định dữ liệu đó là kiểu char thì nó sẽ hiển thị từng byte một theo theo quy định ký tự trong bảng mã ASCII  
+>
+> Còn nếu ta quy định dữ liệu đó là kiểu int thì nó sẽ lấy 4 bytes tức là 32 bit rồi chuyển rồi chuyển từ nhị phân (các bit 0,1) thành sô thập phân rồi hiển thị 
+
+Vì chương trình đã quy định con số ta nhập vào phải là 20 bytes nên sau khi bị ép sang kiểu int sẽ thành 5 số  
+
+```c
+for(i=0; i<5; i++){
+		res += ip[i];
+	}
+```
+Sau đó chương trình sẽ tiến hành cộng 5 số đó cho `res`   
+
+> Nếu vẫn còn thấy rối về đoạn code trên thì bạn nên xem kỹ lại về con trỏ và mảng
+> 
+> https://nguyenvanhieu.vn/moi-quan-he-giua-con-tro-va-mang/
+
+![image](https://user-images.githubusercontent.com/74854445/118054998-7d6fe300-b3b1-11eb-887a-5984015e0407.png)
+
+`n` tới đây thì thấy chương trình đang so sánh EAX với EDX, EDX = 0x21dd09ec chính là giá trị của `hashcode`  
+
+Còn EAX chính là 0x41414141 (AAAA) + 0x42424242 (BBBB) + ... + 0x45454545 (EEEE) = 0x5050504f  
+
+Và tất nhiên là vì khi so sánh không bằng nhau nên chương trình sẽ in ***"wrong passcode"***
+
+Vậy hướng giải quyết sẽ là tìm 5 số khi cộng lại với nhau bằng 0x21dd09ec
+
+## Solving
+
+Cách đầu tiên mà mình nghĩ tới là  
+```py
+print("/x21/xdd/x09/xec" + "/x00"*16)
+```
+Tuy nhiên cách này sẽ sai vì 
