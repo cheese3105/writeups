@@ -204,7 +204,53 @@ Vậy hướng giải quyết sẽ là tìm 5 số khi cộng lại với nhau b
 ## Solving
 
 Cách đầu tiên mà mình nghĩ tới là  
+
 ```py
-print("/x21/xdd/x09/xec" + "/x00"*16)
+print("\x21\xdd\x09\xec" + "\x00"*16)
 ```
-Tuy nhiên cách này sẽ sai vì 
+Tuy nhiên cách này sẽ SAI vì \x00 là một Null Byte (ký tự rỗng)  
+
+![image](https://user-images.githubusercontent.com/74854445/118072107-64782980-b3d3-11eb-8ec4-1252b2023ccf.png)
+
+Sau đó mình thử chia 0x21dd09ec thành 5 phần sẽ được là   
+
+```py
+print("\x06\xc5\xce\xc8" * 4 + "\x06\xc5\xce\xcc")
+```
+
+Nhưng cái này cũng sai luôn nhé :))))  
+
+Cách viết đúng là phải viết theo kiểu ***little endian*** tức là phải đảo ngược thứ tự byte lại  
+
+Link đọc thêm: https://viblo.asia/p/little-endian-vs-big-endian-E375z0pWZGW  
+
+Cách viết đúng sẽ là
+
+```py
+print("\xc8\xce\xc5\x06" * 4 + "\xcc\xce\xc5\x06")
+```
+
+![image](https://user-images.githubusercontent.com/74854445/118074518-43660780-b3d8-11eb-8cb4-eb1d8b01be0a.png)  
+
+> Lưu ý nhỏ là khi viết payload từ python thì nên in bằng python2 nhé, python3 nó không ra đâu  
+> 
+> Còn tại sao thì mình chưa biết :)))
+
+![image](https://user-images.githubusercontent.com/74854445/118074769-d606a680-b3d8-11eb-968b-1b53b507dcec.png)  
+
+Đoạn này là vô đầu `hàm check_password` nè, sẽ thấy nó truyền đúng số mình muốn vào EAX  
+
+![image](https://user-images.githubusercontent.com/74854445/118074871-16febb00-b3d9-11eb-8e13-cc255099257e.png)
+
+Còn đây là lệnh `cmp` so sánh `hashcode` nè, lúc này EAX = EDX = 0x21dd09ec
+
+![image](https://user-images.githubusercontent.com/74854445/118075049-765ccb00-b3d9-11eb-97d1-b6de69f63fe3.png)  
+
+Sau đó chương trình sẽ `call` system để chạy command /bin/cat flag  
+
+Tuy nhiên, đây là mình đang debug trên máy, không có file flag, nên sau đó chương trình sẽ báo lỗi  
+
+Kết nối với server và nhập payload tương tự  
+![image](https://user-images.githubusercontent.com/74854445/118075881-27b03080-b3db-11eb-8381-7fff3fbd25ff.png)
+
+ 
