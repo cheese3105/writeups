@@ -7,6 +7,10 @@ Một challenge rất thích hợp để luyện tập các skill debug cho ngư
 
 Vì MD5 hay hash collision thật ra cũng không quan trọng lắm đến cách chúng ta giải challenge này cho nên mình sẽ không nói gì về chúng ở đây  
 
+Writeup này có phần hơi dài dòng một xí vì mình đã note lại hết những cái mình mới học được, và note kỹ từng bước  
+
+Những bước nào đã từng được note rồi thì challenge sau mình sẽ lược bớt nhé
+
 ## Debug
 
 Ta có soure code C như sau:
@@ -253,4 +257,4 @@ Tuy nhiên, đây là mình đang debug trên máy, không có file flag, nên s
 Kết nối với server và nhập payload tương tự  
 ![image](https://user-images.githubusercontent.com/74854445/118075881-27b03080-b3db-11eb-8381-7fff3fbd25ff.png)
 
- 
+## HẾT
