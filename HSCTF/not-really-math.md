@@ -60,6 +60,9 @@ s.close
 > - Thông tin lấy về từ server thường là byte nên sau đó sẽ phải `decode()` về kiểu string cho dễ làm tính toán  
 > - Tương tự khi gửi cũng phải chuyển những cái mình cần gửi thành kiểu string rồi `encode()` thành kiểu byte thì mới gửi lại cho server được  
 > - `eval()` một hàm của python giúp ta có thể tính toán một chuỗi biểu thức kiểu string  
+> - `mod = 2\*\*32-1`, cái này là do giới hạn lưu trữ của kiểu int là từ -2147483648 đến 2147483647, nếu kết quả tính toán lớn hơn 2147483647 thì sẽ bị đổi thành số âm 
+> để nó vẫn nằm trong khoảng giới hạn. Nên đối với những số lớn hơn 2147483647 thì tác giả bảo là gửi phần dư là được. Nên mình chỉ cần lấy kết quả chia cho `mod` rồi lấy phần 
+> dư gửi đi là được
 
 Kết quả khi chạy:  
 
