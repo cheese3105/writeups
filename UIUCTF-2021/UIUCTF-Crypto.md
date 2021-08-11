@@ -1,3 +1,4 @@
+> p/s: này write up của người ta mình copy hoy nên mọi người đừng thắc mắc gì nhá hông biết trả lời đâu :v
 # back_to_basics
 
 Shoutout to those people who think that base64 is proper encryption.
