@@ -139,4 +139,24 @@ Vậy thì giả thuyết trên là chính xác
 > 
 > Bạn có thể tham khảo thêm [ở đây](https://ctf101.org/binary-exploitation/what-is-the-stack/)  
 
-Quay lại bài, ta có thể xem asm của chương trình để xem thử địa chỉ của các biến cục bộ nằm ở đâu trong stack.
+Quay lại bài, ta có thể `objdump` xem asm của chương trình để xem thử địa chỉ của các biến cục bộ nằm ở đâu trong stack  
+
+![image](https://user-images.githubusercontent.com/74854445/131057737-98b716d6-cc00-45b5-968f-381196bc73ab.png)
+
+Ở đây ta có thể thấy, trước khi gọi hàm `scanf`đỂ lấy dữ liệu đưa vào mảng `name[100]` chương trình có sử dụng lệnh `lea edx, [ebp - 0x70]`  
+
+Ta có thể tạm hiểu là chương trình tạo một khoảng `0x70` từ `ebp` để chứa dữ liệu của mảng `name[100]` nằm trong stack  
+
+Vì mảng `name[100]` là biến cục bộ nên sau khi kết thúc hàm `welcome` phần dữ liệu của hàm này sẽ bị loại bỏ nhưng **KHÔNG HOÀN TOÀN**  
+
+> Ghi chú:  
+> 
+> Các phần dữ liệu được lưu trong stack sẽ được ghi dưới dạng `ebp - (1 số nào đó)`  
+> 
+> Lý do là `ebp -` chứ không phải là `ebp +` vì stack phát triển ngược, stack phát triển từ vị trí có địa chỉ cao đến vị trí có địa chỉ thấp  
+> 
+> Nên các dữ liệu được lưu trữ trong stack sẽ luôn có địa chỉ thấp hơn địa chỉ của `ebp`  
+> 
+> ![image](https://user-images.githubusercontent.com/74854445/131058659-3f769a24-ce80-4098-b9ae-85191f245921.png)
+ 
+ 
