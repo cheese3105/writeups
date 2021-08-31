@@ -143,7 +143,7 @@ Quay lại bài, ta có thể `objdump` xem asm của chương trình để xem 
 
 ![image](https://user-images.githubusercontent.com/74854445/131057737-98b716d6-cc00-45b5-968f-381196bc73ab.png)
 
-Ở đây ta có thể thấy, trước khi gọi hàm `scanf`đỂ lấy dữ liệu đưa vào mảng `name[100]` chương trình có sử dụng lệnh `lea edx, [ebp - 0x70]`  
+Ở đây ta có thể thấy, trước khi gọi hàm `scanf`để lấy dữ liệu đưa vào mảng `name[100]` chương trình có sử dụng lệnh `lea edx, [ebp - 0x70]`  
 
 Ta có thể tạm hiểu là chương trình tạo một khoảng `0x70` từ `ebp` để chứa dữ liệu của mảng `name[100]` nằm trong stack  
 
@@ -151,7 +151,7 @@ Vì mảng `name[100]` là biến cục bộ nên sau khi kết thúc hàm `welc
 
 > Ghi chú:  
 > 
-> Các phần dữ liệu được lưu trong stack sẽ được ghi dưới dạng `ebp - (1 số nào đó)`  
+> Các phần dữ liệu được lưu trong stack sẽ được ghi dưới dạng `ebp - (1 số nào đó)` hoặc `esp + (1 số nào đó)`  
 > 
 > Lý do là `ebp -` chứ không phải là `ebp +` vì stack phát triển ngược, stack phát triển từ vị trí có địa chỉ cao đến vị trí có địa chỉ thấp  
 > 
@@ -159,4 +159,30 @@ Vì mảng `name[100]` là biến cục bộ nên sau khi kết thúc hàm `welc
 > 
 > ![image](https://user-images.githubusercontent.com/74854445/131058659-3f769a24-ce80-4098-b9ae-85191f245921.png)
  
- 
+Còn giá trị`passcode1` thì nằm ở vị trí `ebp - 0x10`
+![image](https://user-images.githubusercontent.com/74854445/118888705-312f2080-b926-11eb-9416-e47f1c303f36.png)  
+
+Ta lấy `0x70 - 0x10 = 0x60` tức là bằng `96 bytes`  
+
+Như đã nói ở trên là phần dữ liệu trong stack sẽ **KHÔNG HOÀN TOÀN BỊ LOẠI BỎ** + biến `passcode1` không hề được gán giá trị ngay lúc khởi tạo  
+
+=> Giá trị của `passcode1` sẽ bằng `4 bytes` dữ liệu cuối của mảng `name[100]`
+
+### Kiểm tra giả thuyết
+
+Mình sẽ nhập vào mảng `name` đoạn payload như sau  
+
+![image](https://user-images.githubusercontent.com/74854445/131500685-066356be-194e-473d-9caf-548f2c3b3b66.png)  
+
+Sau đó `n` đến `scanf` trong hàm `login`, thì thấy chương trình bảo ta nhập dữ liệu vào địa chỉ `0x42424242`  
+
+=> Giả thuyết trên là đúng  
+
+![image](https://user-images.githubusercontent.com/74854445/131501329-9680e41c-9e99-4aa2-8219-83e1d9f6a452.png)
+
+Thông qua việc điều khiển `passcode1` ta có thể chọn được một địa chỉ bất kỳ và quyết định được giá trị của địa chỉ đó  
+
+Vậy câu hỏi được đặt ra là ***Ghi đè ở đâu và ghi đè cái gì ??***  
+
+Ta để ý ngay sau khi gọi hàm `scanf` thì kế tiếp là đến hàm `fflush`  
+
