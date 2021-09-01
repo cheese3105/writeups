@@ -194,6 +194,56 @@ Ta để ý ngay sau khi gọi hàm `scanf` thì kế tiếp là đến hàm `ff
 
 ![image](https://user-images.githubusercontent.com/74854445/131643332-ee1b5f99-24ce-465b-892d-2659b638131e.png)
 
-Các instrution của hàm `fflush` trong section `PLT` có instruction `jmp    DWORD PTR ds:0x804a004` tạm hiểu là nhảy tới địa chỉ `0x804a004`  
+Các instrution của hàm `fflush` trong section `PLT` có instruction `jmp    DWORD PTR ds:0x804a004`  
 
-Đây là địa chỉ của hàm `fflush` trong `GOT`, và đây cũng là địa chỉ mà ta sẽ ghi đè 
+Để cho rõ thì `jmp    DWORD PTR ds:0x804a004` = `jmp    *0x804a004`  
+
+Nghĩa là nhảy tới địa chỉ mà con trỏ `0x804a004` trỏ tới  
+
+Bình thường thì con trỏ sẽ trỏ tới địa chỉ của hàm `fflush` trong `GOT`
+
+Địa chỉ của hàm `fflush` trong `GOT` chính là địa chỉ mà chúng ta sẽ ghi đè  
+
+### Bình thường
+
+Khi hàm `fflush` được gọi nó sẽ gọi đến địa chỉ hàm `fflush` trong `PLT`  
+
+Sau đó hàm `fflush` trong `PLT` sẽ `jmp` đến của hàm `fflush` trong `GOT` và bắt đầu thực thi các instruction từ địa đó trở đi  
+
+Sau khi thực xong các instruction của hàm `fflush` trong `GOT` thì nó trở lại thực hiện nốt các intruction trong `PLT`  
+
+Rồi trở lại hàm `login`...
+
+### Tấn công  
+
+Do ta có thể chọn một địa chỉ và ghi đè nội dung của địa chỉ đó thông qua biến `passcode1`  
+
+Nên ta sẽ chọn địa chỉ bắt đầu các instruction của hàm`jmp` trong GOT  
+
+Cúng chính là nội dung/giá trị của con trỏ `0x804a004`
+
+Ta sẽ thay nội dung/giá trị của con trỏ `0x804a004` thành địa chỉ của instruction `puts` hoặc intrustion `system` (mình đề xuất dùng địa chỉ của instruction `puts`)  
+
+Tức là khi hàm `fflush` được gọi nó sẽ nhảy đến địa chỉ mà con trỏ `0x804a004` trỏ tới  
+
+Lúc này nó sẽ trỏ tới instuction `puts` và thực thi các instruction từ instruction `puts` trở đi  
+
+### Payload
+
+Vậy Payload sẽ gồm:  
+
+- 96 bytes "A"
+- 4 bytes "\x04\xa0\x04\x08"  
+- Cái mà ta muốn ghi đè được viết dưới dạng số nguyên (int): "134514147"  
+
+```
+python2 -c 'print("A"*96 + "\x04\xa0\x04\x08" + "134514147")' | ./passcode
+```  
+
+Kết quả:  
+
+![image](https://user-images.githubusercontent.com/74854445/131665872-12a95200-f84c-4943-a15f-e13a96e98460.png)
+
+**Flag: Sorry mom.. I got confused about scanf usage :(**  
+
+## HẾT
