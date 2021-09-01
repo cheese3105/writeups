@@ -88,9 +88,9 @@ Giả thuyết là
 
 Do ghi sai cú pháp nên thay vì hàm scanf sẽ hiểu giá trị của passcode1 và passcode2 là địa chỉ
 
-Và sẽ đưa những dữ liệu mà nó đọc được từ stdin và địa chỉ đó
+Và sẽ đưa những dữ liệu mà nó đọc được từ stdin vào địa chỉ đó
 
-Mà biến passcode1 và passcode2 khi khởi tạo lại không được gán giá trị cụ thể nên sẽ có giá trị ảo (một giá trị nào đó do máy tính tự khởi tạo)
+Mà biến passcode1 và passcode2 khi khởi tạo lại không được gán giá trị cụ thể nên sẽ có giá trị ảo (1 lát chúng ta sẽ nói đến giá trị ảo này sau)
 
 Vì là một giá trị ảo nên rất có thể là địa chỉ không có trong chương trình hoặc là nằm ở một vùng mà chương trình không được đụng tới
 
@@ -107,7 +107,7 @@ void welcome(){
 	printf("Welcome %s!\n", name);
 }
 ```
-Ta có thể dùng xem đoạn code asm của chương trình để so sánh thử scanf của 2 hàm
+Ta có thể xem đoạn code asm của chương trình để so sánh thử scanf của 2 hàm
 
 ## Debug
 
