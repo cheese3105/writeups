@@ -51,7 +51,7 @@ int main(){
 }
 ```
 
-Xem qua source cood thì ta có thể suy ra được chỉ cần cho passcode1==338150 && passcode2==13371337 là xong  
+Xem qua source code thì ta có thể suy ra được chỉ cần cho passcode1==338150 && passcode2==13371337 là xong  
 
 Tuy nhiên khi chạy chương trình  
 
@@ -184,5 +184,16 @@ Thông qua việc điều khiển `passcode1` ta có thể chọn được một
 
 Vậy câu hỏi được đặt ra là ***Ghi đè ở đâu và ghi đè cái gì ??***  
 
+> Ý tưởng chính để giải bài này là dùng Got Overwrite nếu chưa rõ về Got Overwrite thì bạn có thể tham khảo [bài viết này](https://github.com/cheese3105/research/blob/main/GOT%20OVERWRITE/GOT%20OVERWRITE.md) của mình  
+
 Ta để ý ngay sau khi gọi hàm `scanf` thì kế tiếp là đến hàm `fflush`  
 
+![image](https://user-images.githubusercontent.com/74854445/131642719-3d99a6e3-6814-4fe5-b250-bf32e9f52568.png)
+
+`0x08048430` là địa chỉ của hàm `fflush` trong section `PLT`  
+
+![image](https://user-images.githubusercontent.com/74854445/131643332-ee1b5f99-24ce-465b-892d-2659b638131e.png)
+
+Các instrution của hàm `fflush` trong section `PLT` có instruction `jmp    DWORD PTR ds:0x804a004` tạm hiểu là nhảy tới địa chỉ `0x804a004`  
+
+Đây là địa chỉ của hàm `fflush` trong `GOT`, và đây cũng là địa chỉ mà ta sẽ ghi đè 
