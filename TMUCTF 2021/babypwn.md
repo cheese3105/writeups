@@ -151,7 +151,6 @@ p.interactive()
 
 `Ctr + S` để save lại đoạn script trên rồi sang terminal gõ `python3 exploit.py` để chạy đoạn script  
 
-![image](https://user-images.githubusercontent.com/74854445/132891220-7164fd89-48e1-4f05-a09a-477b0565a073.png)
+![image](https://user-images.githubusercontent.com/74854445/132891405-d136995f-0a56-4945-aff6-5e450ffa72b6.png)
 
 Lúc này sẽ xuất hiện thêm 1 cửa sổ thứ 3 để giúp ta debug  
-
