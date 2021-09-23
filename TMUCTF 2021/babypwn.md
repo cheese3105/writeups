@@ -47,6 +47,7 @@ Tóm tắt là hàm này sẽ giúp ta đọc được file `flag.txt` trên ser
 
 ## Khai thác
 
+### Cách 1:
 Vậy mục tiêu của chúng ta là làm sao có thể nhảy được đến hàm `wow` là thành công  
 
 Để đến được hàm `wow` ta sẽ cần phải ghi đè `return address` (địa chỉ trả về của một hàm)  
@@ -66,6 +67,14 @@ Và vì `v5` là biến cục bộ (local variable), được lưu trữ trong s
 Nên thông qua lỗ hổng trên ta có thể thay đổi được giá trị của biến `v5` thành `0xcafe` 
 
 **=> Nhảy được đến hàm `helloUser`**  
+
+### Cách 2  
+
+Như đã nói ở trên, để đến được hàm `wow` ta sẽ cần phải ghi đè `return address` (địa chỉ trả về của một hàm)  
+
+Và main thì cũng là một hàm, cũng có `return address` nên ta không cần phải làm lằng nhằng như cách 1  
+
+Chỉ cần ghi đè `return address` của hàm main là được :3
 
 ## Debug Script Exploit
 
@@ -154,3 +163,38 @@ p.interactive()
 ![image](https://user-images.githubusercontent.com/74854445/132891405-d136995f-0a56-4945-aff6-5e450ffa72b6.png)
 
 Lúc này sẽ xuất hiện thêm 1 cửa sổ thứ 3 để giúp ta debug  
+
+Trong pwndbg ấn `n` liên tục để tới được instruction `cmp` (compare - so sánh) của hàm `main`  
+
+![image](https://user-images.githubusercontent.com/74854445/134527142-d51fd4c7-4aee-4eaf-98d2-424791e2aa72.png)  
+
+`dword ptr [rbp]` ý chỉ 4bytes bắt đầu từ địa chỉ nằm trong thanh ghi `rbp`  
+
+`rpb - 4` nghĩa là lấy địa chỉ nằm trong `rbp` trừ cho 4  
+
+Vậy `dword ptr [rbp - 4]` ý chỉ 4 bytes bắt đầu từ địa chỉ nằm trong rpb sau khi đã trừ cho 4  
+
+> Chi tiết thêm về `dword ptr` xem tại [đây](http://www.cs.virginia.edu/~evans/cs216/guides/x86.html)
+
+![image](https://user-images.githubusercontent.com/74854445/134555395-faf7b771-1ee2-4d5a-b676-e58c29e9f1ef.png)
+
+Dùng lệnh `x` để xem bộ nhớ, xem nội dung của các địa chỉ, xem thêm về lệnh `x` ở [đây](https://visualgdb.com/gdbreference/commands/x)  
+
+Ta thấy:  
+
+- Thanh ghi `RBP` chứa địa chỉ `0x7ffe6f929600`, nói cách khác `0x7ffe6f929600` là vị trí mà con trỏ `RBP` đang trỏ vào  
+
+- Vì `RBP` trỏ vào `0x7ffe6f929600` nên 8 bytes từ `0x7ffe6f929600` là phần `RBP` được push vào stack khi hàm main được gọi
+
+- 8 bytes đó là `0x4242424243434343`, là 8 chữ `BBBBCCCC` mà ta ghi đè nội dung của phần `RBP` trong stack
+
+- Thanh ghi `RSP` chứa địa chỉ `0x7ffe6f9295d0`, nói cách khác `0x7ffe6f9295d0` là vị trí mà con trỏ `RSP` đang trỏ vào 
+
+Thông qua việc xác định `RBP`, `RSP` ta sẽ có thể dễ dàng hình dung stack như sau:
+
+![image](https://user-images.githubusercontent.com/74854445/134560417-fddfc807-a6bb-460f-95dd-0a2ee8e4456b.png)
+
+> *Ghi chú: Trong đa số các bộ vi xử lý (CPU) thì 1 địa chỉ sẽ đại diện cho 8 bits. Mỗi byte trong bộ nhớ sẽ có 1 địa chỉ riêng biệt*  
+>
+> rbp - 4 chính là bằng `0x7ffe6f929600 - 4 = 0x7ffe6f9295fc`, đây là địa chỉ của chữ A đầu tiên, 4 bytes từ địa chỉ này sẽ là AAAA
+
