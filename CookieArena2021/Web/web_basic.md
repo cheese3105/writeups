@@ -1,6 +1,6 @@
 # Web Basic
 
-## 1. Sauce
+## 1. Sause
 
 > Trình duyệt đang rất vất vả để chuyển đổi các đoạn mã thành hình ảnh và màu sắc. Hãy trải nghiệm góc nhìn của trình duyệt nhé!
 >
@@ -58,7 +58,93 @@ Hướng dẫn cách cài đặt, setup và sử dụng Burp Suite đã được
 
 Khi truy cập vào 1 trang web là ta đang thực hiện việc gửi một `GET request` đến Web Server và sẽ nhận được `response` của trang web như sau  
 
+![image](https://user-images.githubusercontent.com/74854445/140978392-ec4116e9-e042-490d-8c68-f5a3f49c83b0.png)
 
+Để ý thấy có một đoạn comment trong response nói về `Basic Authentication Credential`  
+
+Sau khi tìm hiểu về [Basic Authentication](https://viblo.asia/p/basic-authentication-Qbq5QmJL5D8) thì mình nghĩ bài này đang muốn mình gửi request có kèm theo thông tin đăng nhập  
+
+Để làm được việc đó thì mình sẽ thêm phần `Authorization: Basic <Base 64 encode {username:password}>` vào cấu trúc của header như sau  
+
+- Base 64 encode {gaconlonton:cookiehanhoan} -> `Z2Fjb25sb250b246Y29va2llaGFuaG9hbg==`  
+
+- Thêm `Authorization: Basic Z2Fjb25sb250b246Y29va2llaGFuaG9hbg==` vào header  
+
+- Vì đây là đang gửi thông tin đến Web server nên mình sẽ đổi thành phương thức `POST`  
+
+![image](https://user-images.githubusercontent.com/74854445/140987236-4aadf846-71b5-4cfb-a038-1e13d369513c.png)
+
+**Flag: Flag{m4g1c@l_h34d3r_xD}**
+
+## 4. JS B**p B**p  
+
+> Sau nhiều đêm suy nghĩ về việc làm thế nào để bảo vệ mã nguồn. Cố gắng thoát khỏi ánh mắt soi mói của Mèo Yang Hồ.
+>
+> Gà chẹp miệng rồi nói: "Đã tới lúc phải cho nó phải thốt lên rằng! WTF!!!"
+>
+> http://chal4.web.letspentest.org/  
+
+Kiểm tra source code của trang web thì thấy có 4 file `JavaScript`  
+
+![image](https://user-images.githubusercontent.com/74854445/140988881-d293979d-64f4-41ea-a545-c78162613604.png)
+
+Mở lên thử thì thấy cái này @@  
+
+![image](https://user-images.githubusercontent.com/74854445/140988996-784e18f9-4de9-4108-8bd4-72a708dd9fcc.png)
+
+Google thử thì mình biết được đây là `JSFuck`  
+
+Một style lập trình rất khó hiểu dựa trên những thành phần cốt lõi của javascript  
+
+Nó chỉ sử dụng 6 ký tự để viết và chạy code là  \[ , ] , ( , ) , ! , và +  
+
+May mắn thay là có rất nhiều trang web hỗ trợ decode JSFuck  
+
+Giúp mình không cần phải học cách code JSFuck mới có thể hiểu được đoạn code đó nói gì  
+
+Ví dụ như trang này: https://enkhee-osiris.github.io/Decoder-JSFuck/  
+
+Decode xong thì mình sẽ có được đoạn code sau  
+
+```js 
+//js 1: 
+function verifyUsername(username) {
+  if (username != "cookiehanhoan") {
+    return false     
+  }     
+  return true   
+}
+//js 2: 
+function reverseString(str) {
+  if (str === "") { 
+    return "" 
+  }
+  else {
+    return reverseString(str.substr(1)) + str.charAt(0)
+  }
+}
+//js 3: 
+function verifyPassword(password) {
+  if (reverseString(password) != "dr0Wss@p3rucreSr3pus") {
+    return false     
+  }     
+  return true   
+}
+//js 4: 
+function verifyRole(role) {
+  if (role.charCodeAt(0) != 64) {
+    return false;       
+  }       
+  if ((role.charCodeAt(1) + role.charCodeAt(2) != 209) && (role.charCodeAt(2) - role.charCodeAt(1) != 9)) {
+    return false       
+  }       
+  if ((role.charCodeAt(3).toString() + role.charCodeAt(4).toString() != "10578") && (role.charCodeAt(3) - role.charCodeAt(4) != 27)) {
+    return false       
+  }     
+  return true   
+}
+
+```
 
 ## 5. Hân Hoan 
 
