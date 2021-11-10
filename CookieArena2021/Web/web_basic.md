@@ -76,13 +76,15 @@ Sau khi tìm hiểu về [Basic Authentication](https://viblo.asia/p/basic-authe
 
 **Flag: Flag{m4g1c@l_h34d3r_xD}**
 
-## 4. JS B**p B**p  
+## 4. JS B\*\*p B\*\*p  
 
 > Sau nhiều đêm suy nghĩ về việc làm thế nào để bảo vệ mã nguồn. Cố gắng thoát khỏi ánh mắt soi mói của Mèo Yang Hồ.
 >
 > Gà chẹp miệng rồi nói: "Đã tới lúc phải cho nó phải thốt lên rằng! WTF!!!"
 >
 > http://chal4.web.letspentest.org/  
+
+![image](https://user-images.githubusercontent.com/74854445/141047368-207b8855-456d-436a-9286-e948b1c65a7b.png)
 
 Kiểm tra source code của trang web thì thấy có 4 file `JavaScript`  
 
@@ -114,6 +116,7 @@ function verifyUsername(username) {
   }     
   return true   
 }
+// => username = cookiehanhoan
 //js 2: 
 function reverseString(str) {
   if (str === "") { 
@@ -123,6 +126,7 @@ function reverseString(str) {
     return reverseString(str.substr(1)) + str.charAt(0)
   }
 }
+// => Đây là hàm dùng để để đảo ngược thứ tự chữ cái trong câu
 //js 3: 
 function verifyPassword(password) {
   if (reverseString(password) != "dr0Wss@p3rucreSr3pus") {
@@ -130,6 +134,7 @@ function verifyPassword(password) {
   }     
   return true   
 }
+// => password = sup3rSercur3p@ssW0rd
 //js 4: 
 function verifyRole(role) {
   if (role.charCodeAt(0) != 64) {
@@ -143,8 +148,19 @@ function verifyRole(role) {
   }     
   return true   
 }
+// => role = @mdiN
 
-```
+```  
+
+Từ đoạn code suy ra được những cái cần điền  
+
+![image](https://user-images.githubusercontent.com/74854445/141047534-e7003dea-741d-418d-ba74-871a21cfafcd.png)
+
+Submit và get flag thui  
+
+![image](https://user-images.githubusercontent.com/74854445/141047574-a4cf76dc-da78-4919-bf3f-e94aa9c7af56.png)
+
+**Flag: Flag{JAV-ascript_F*ck}**  
 
 ## 5. Hân Hoan 
 
@@ -188,5 +204,14 @@ Mình thử double click vào, sửa `Guest` lại thành `CookieHanHoan` rồi 
 
 ![image](https://user-images.githubusercontent.com/74854445/140924486-d6fda835-3d2e-4d09-8cca-e131f9045d12.png)
 
-**Flag: Flag{Cookies_Yummy_Cookies_Yammy!}**
+**Flag: Flag{Cookies_Yummy_Cookies_Yammy!}**  
+
+## 6. Infinite Loop  
+
+> Cuộc đời luôn là vậy. Một giây trước tưởng đã cùng đường, một giây sau có lại đầy hy vọng. Các chiến binh đã có công cụ mạnh mẽ trong tay, hãy dùng nó để can thiệp dòng chảy.
+>
+> http://chal6.web.letspentest.org/  
+
+
+
 
